@@ -6,7 +6,7 @@ def ingest(filepath):
     with open(filepath, "r") as file:
         data = json.load(file)
 
-    trips = data["entity"][0:5]
+    trips = data["entity"]
     feedTimestamp = data["header"]["timestamp"]
     trips_data = []
     stop_data = []
@@ -17,19 +17,23 @@ def ingest(filepath):
         scheduleRelationship = trip["tripUpdate"]["trip"]["scheduleRelationship"]
         routeId = trip["tripUpdate"]["trip"]["routeId"]
         directionId = trip["tripUpdate"]["trip"]["directionId"]
-        vehicle = None if scheduleRelationship == "CANCELED" else trip["tripUpdate"]["vehicle"]["id"]
+        if scheduleRelationship == "CANCELED" or "vehicle" not in trip["tripUpdate"]:
+            vehicle = None
+        else:
+            vehicle = trip["tripUpdate"]["vehicle"]["id"]
         
         # trip_id TEXT, start_date TEXT, feed_timestamp INTEGER, schedule_relationship TEXT, route_id TEXT, direction INTEGER, vehicle_id TEXT, PRIMARY KEY (trip_id, start_date, feed_timestamp))")
         trips_data.append((tripId, startDate, feedTimestamp, scheduleRelationship, routeId, directionId, vehicle))
 
         if scheduleRelationship == "SCHEDULED":
-            
             stops = trip["tripUpdate"]["stopTimeUpdate"]
             for stop in stops:
-                stopId = stop["stopId"]
-                arrivalTime = stop["arrival"]["time"]
-                #t_id TEXT, st_date TEXT, fd_timestamp INTEGER, stop_id TEXT, arrival_time INTEGER
-                stop_data.append((tripId, startDate, feedTimestamp, stopId, arrivalTime))
+                if "arrival" in stop:
+                    stopId = stop["stopId"]
+                    arrivalTime = stop["arrival"]["time"]
+                    #t_id TEXT, st_date TEXT, fd_timestamp INTEGER, stop_id TEXT, arrival_time INTEGER
+                    stop_data.append((tripId, startDate, feedTimestamp, stopId, arrivalTime))
+                
 
     con = sqlite3.connect("shuttle.db")
     cur = con.cursor()
@@ -54,4 +58,3 @@ def check_tables():
 if __name__ == "__main__":
     db.init_db()
     ingest("tripupdates.json")
-    check_tables()
