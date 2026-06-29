@@ -32,13 +32,13 @@ def ingest(filepath):
                     stopId = stop["stopId"]
                     arrivalTime = stop["arrival"]["time"]
                     #t_id TEXT, st_date TEXT, fd_timestamp INTEGER, stop_id TEXT, arrival_time INTEGER
-                    stop_data.append((tripId, startDate, feedTimestamp, stopId, arrivalTime))
+                    stop_data.append((tripId, startDate, feedTimestamp, stopId, arrivalTime, routeId))
                 
 
     con = sqlite3.connect("shuttle.db")
     cur = con.cursor()
     cur.executemany("INSERT INTO trips (trip_id, start_date, feed_timestamp, schedule_relationship, route_id, direction, vehicle_id) VALUES (?, ?, ?, ?, ?, ?, ?)", trips_data)
-    cur.executemany("INSERT INTO stops (t_id, st_date, fd_timestamp, stop_id, arrival_time) VALUES (?, ?, ?, ?, ?)", stop_data)
+    cur.executemany("INSERT INTO stops (t_id, st_date, fd_timestamp, stop_id, arrival_time, route_id) VALUES (?, ?, ?, ?, ?, ?)", stop_data)
         
     con.commit()
     con.close()

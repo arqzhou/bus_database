@@ -13,7 +13,7 @@ def init_db():
     cur.execute("PRAGMA foreign_keys = ON")
 
     cur.execute("CREATE TABLE IF NOT EXISTS trips(trip_id TEXT, start_date TEXT, feed_timestamp INTEGER, schedule_relationship TEXT, route_id TEXT, direction INTEGER, vehicle_id TEXT, PRIMARY KEY (trip_id, start_date, feed_timestamp))")
-    cur.execute("CREATE TABLE IF NOT EXISTS stops(t_id TEXT, st_date TEXT, fd_timestamp INTEGER, stop_id TEXT, arrival_time INTEGER, FOREIGN KEY (t_id, st_date, fd_timestamp) REFERENCES trips(trip_id, start_date, feed_timestamp))")
+    cur.execute("CREATE TABLE IF NOT EXISTS stops(t_id TEXT, st_date TEXT, fd_timestamp INTEGER, stop_id TEXT, arrival_time INTEGER, route_id TEXT, FOREIGN KEY (t_id, st_date, fd_timestamp) REFERENCES trips(trip_id, start_date, feed_timestamp))")
 
     
     con.commit()
