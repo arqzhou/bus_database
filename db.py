@@ -6,8 +6,6 @@ def init_db():
         os.remove("shuttle.db")
         print("Removed shuttle_db for fresh start!")
 
-
-
     con = sqlite3.connect("shuttle.db")
     cur = con.cursor()
     cur.execute("PRAGMA foreign_keys = ON")

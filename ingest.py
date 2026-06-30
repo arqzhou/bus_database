@@ -39,17 +39,6 @@ def ingest(filepath):
     cur = con.cursor()
     cur.executemany("INSERT INTO trips (trip_id, start_date, feed_timestamp, schedule_relationship, route_id, direction, vehicle_id) VALUES (?, ?, ?, ?, ?, ?, ?)", trips_data)
     cur.executemany("INSERT INTO stops (t_id, st_date, fd_timestamp, stop_id, arrival_time) VALUES (?, ?, ?, ?, ?)", stop_data)
-
-    # cur.execute("""
-    #     SELECT trips.route_id, stops.stop_id, stops.arrival_time
-    #     FROM trips
-    #     JOIN stops
-    #     ON trips.trip_id = stops.t_id
-    #         AND trips.start_date = stops.st_date
-    #         AND trips.feed_timestamp = stops.fd_timestamp;
-    # """)
-
-    
         
     con.commit()
     con.close()
