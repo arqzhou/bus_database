@@ -32,13 +32,24 @@ def ingest(filepath):
                     stopId = stop["stopId"]
                     arrivalTime = stop["arrival"]["time"]
                     #t_id TEXT, st_date TEXT, fd_timestamp INTEGER, stop_id TEXT, arrival_time INTEGER
-                    stop_data.append((tripId, startDate, feedTimestamp, stopId, arrivalTime, routeId))
+                    stop_data.append((tripId, startDate, feedTimestamp, stopId, arrivalTime))
                 
 
     con = sqlite3.connect("shuttle.db")
     cur = con.cursor()
     cur.executemany("INSERT INTO trips (trip_id, start_date, feed_timestamp, schedule_relationship, route_id, direction, vehicle_id) VALUES (?, ?, ?, ?, ?, ?, ?)", trips_data)
-    cur.executemany("INSERT INTO stops (t_id, st_date, fd_timestamp, stop_id, arrival_time, route_id) VALUES (?, ?, ?, ?, ?, ?)", stop_data)
+    cur.executemany("INSERT INTO stops (t_id, st_date, fd_timestamp, stop_id, arrival_time) VALUES (?, ?, ?, ?, ?)", stop_data)
+
+    # cur.execute("""
+    #     SELECT trips.route_id, stops.stop_id, stops.arrival_time
+    #     FROM trips
+    #     JOIN stops
+    #     ON trips.trip_id = stops.t_id
+    #         AND trips.start_date = stops.st_date
+    #         AND trips.feed_timestamp = stops.fd_timestamp;
+    # """)
+
+    
         
     con.commit()
     con.close()
@@ -58,3 +69,4 @@ def check_tables():
 if __name__ == "__main__":
     db.init_db()
     ingest("tripupdates.json")
+    ingest("june_30_trip_updates.json")
