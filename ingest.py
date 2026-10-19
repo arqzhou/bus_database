@@ -1,10 +1,15 @@
 import json
 import sqlite3
 import db
+import dotenv
+import os
+import requests
+import json
 
 def ingest(filepath):
     with open(filepath, "r") as file:
-        data = json.load(file)
+                data = json.load(file)
+    
 
     trips = data["entity"]
     feedTimestamp = data["header"]["timestamp"]
@@ -22,7 +27,6 @@ def ingest(filepath):
         else:
             vehicle = trip["tripUpdate"]["vehicle"]["id"]
         
-        # trip_id TEXT, start_date TEXT, feed_timestamp INTEGER, schedule_relationship TEXT, route_id TEXT, direction INTEGER, vehicle_id TEXT, PRIMARY KEY (trip_id, start_date, feed_timestamp))")
         trips_data.append((tripId, startDate, feedTimestamp, scheduleRelationship, routeId, directionId, vehicle))
 
         if scheduleRelationship == "SCHEDULED":
@@ -31,7 +35,6 @@ def ingest(filepath):
                 if "arrival" in stop:
                     stopId = stop["stopId"]
                     arrivalTime = stop["arrival"]["time"]
-                    #t_id TEXT, st_date TEXT, fd_timestamp INTEGER, stop_id TEXT, arrival_time INTEGER
                     stop_data.append((tripId, startDate, feedTimestamp, stopId, arrivalTime))
                 
 
